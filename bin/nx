@@ -1,0 +1,17 @@
+#!/bin/bash
+basedir=$(dirname "$(echo "$0" | sed -e 's,\\,/,g')")
+
+MAX_OLD_SPACE_SIZE=3128
+
+case `uname` in
+    *CYGWIN*) basedir=`cygpath -w "$basedir"`;;
+esac
+
+if [ -x "$basedir/node" ]; then
+  "$basedir/node" --max-old-space-size=$MAX_OLD_SPACE_SIZE --optimize_for_size --gc-interval=100 "./node_modules/.bin/nx" "$@"
+  ret=$?
+else
+  node --max-old-space-size=$MAX_OLD_SPACE_SIZE --optimize_for_size --gc-interval=100 "./node_modules/.bin/nx" "$@"
+  ret=$?
+fi
+exit $ret

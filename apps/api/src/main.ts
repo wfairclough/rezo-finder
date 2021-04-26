@@ -5,6 +5,7 @@
 
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import { OntarioParksService } from '@rezo-finder/engine/ontario-parks';
 
 import { AppModule } from './app/app.module';
 
@@ -13,9 +14,14 @@ async function bootstrap() {
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);
   const port = process.env.PORT || 3333;
-  await app.listen(port, () => {
-    Logger.log('Listening at http://localhost:' + port + '/' + globalPrefix);
-  });
+
+  const service = app.get(OntarioParksService);
+
+  await service.checkAvailability({});
+
+  // await app.listen(port, () => {
+  //   Logger.log('Listening at http://localhost:' + port + '/' + globalPrefix);
+  // });
 }
 
-bootstrap();
+bootstrap().catch(err => console.log(err));
