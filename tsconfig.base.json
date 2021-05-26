@@ -7,6 +7,8 @@
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
     "importHelpers": true,
     "target": "es2015",
     "module": "esnext",
@@ -18,7 +20,8 @@
       "@rezo-finder/engine/ontario-parks": [
         "libs/engine/ontario-parks/src/index.ts"
       ],
-      "@rezo-finder/engine/common": ["libs/engine/common/src/index.ts"]
+      "@rezo-finder/engine/common": ["libs/engine/common/src/index.ts"],
+      "@rezo-finder/bar": ["libs/bar/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

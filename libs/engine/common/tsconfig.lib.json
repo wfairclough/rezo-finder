@@ -4,7 +4,7 @@
     "module": "commonjs",
     "outDir": "../../../dist/out-tsc",
     "declaration": true,
-    "types": ["node"],
+    "types": ["node", "webdriverio", "@wdio/devtools-service"],
     "target": "es2015"
   },
   "exclude": ["**/*.spec.ts"],

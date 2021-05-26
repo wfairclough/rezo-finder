@@ -14,6 +14,7 @@
   "projects": {
     "api": { "tags": [] },
     "engine-ontario-parks": { "tags": [] },
-    "engine-common": { "tags": [] }
+    "engine-common": { "tags": [] },
+    "bar": { "tags": [] }
   }
 }

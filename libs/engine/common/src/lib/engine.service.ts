@@ -16,7 +16,7 @@ const HEADLESS_ARGS = [
   '--disable-dev-shm-usage',  
 ];
 
-const CHROME_BIN_PATH=`/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome`;
+const CHROME_BIN_PATH=`/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome`;
 
 @Injectable()
 export class EngineService {
@@ -33,12 +33,14 @@ export class EngineService {
       ...params,
     };
 
-    const browser = await remote({
+    const browser: any = await remote({
       logLevel: 'trace', //'trace' | 'debug' | 'info' | 'warn' | 'error' | 'silent';
       automationProtocol: 'devtools', // 'webdriver' | 'devtools' | './protocol-stub';
+      services: ['intercept'],
       capabilities: {
         browserName: 'chrome',
         acceptInsecureCerts: true,
+        'goog:chromeOptions': opts.headless ? { args: HEADLESS_ARGS } : {},
         "wdio:devtoolsOptions": {
           headless: opts.headless,
         },

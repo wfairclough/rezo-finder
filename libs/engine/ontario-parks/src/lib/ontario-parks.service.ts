@@ -1,51 +1,63 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { CURRENT_SESSION, Session } from '@rezo-finder/engine/common';
-import { Browser, Element } from 'webdriverio';
+import { Inject, Injectable, Logger } from '@nestjs/common';
+import { CURRENT_SESSION, HttpClient, HTTP_CLIENT, Session, SessionFactory, SESSION_FACTORY } from '@rezo-finder/engine/common';
 import { CampsiteSearchForm } from './campsite-search-form';
+import { Equipment } from './models/equipment';
+import { RootMaps } from './models/rootmaps';
 
 export interface CheckAvailabilityParams {
-
+  campsite: string;
+  equipment: string;
 }
 
 const PARKS_ONTARIO_RESERVATIONS_URL = 'https://reservations.ontarioparks.com/';
 
+const log = new Logger('OntarioParksService');
+
 @Injectable()
 export class OntarioParksService {
 
-  private get browser(): Browser<'async'> {
-    return this.session.browser;
-  }
-
   constructor(
-    @Inject(CURRENT_SESSION) private session: Session,
+    @Inject(SESSION_FACTORY) private sessionFactory: SessionFactory,
+    @Inject(HTTP_CLIENT) private http: HttpClient,
   ) {}
 
+  async getCampsites() {
+    const resp = await this.http.get<RootMaps>('https://reservations.ontarioparks.com/api/resourcelocation/rootmaps');
+    const rootmaps = resp.body
+    log.debug(`Got ${rootmaps?.length} root maps`);
+    return rootmaps;
+  }
+
+  async getEquipment() {
+    const resp = await this.http.get<Equipment[]>('https://reservations.ontarioparks.com/api/equipment');
+    const equipment = resp.body
+    log.debug(`Got ${equipment?.length} root maps`);
+    return equipment;
+  }
+
   async checkAvailability(params: CheckAvailabilityParams) {
-    await this.browser.url(PARKS_ONTARIO_RESERVATIONS_URL);
-    const title = await this.browser.getTitle();
+    const { campsite } = params;
+    const { browser } = await this.sessionFactory();
+    await browser.url(PARKS_ONTARIO_RESERVATIONS_URL);
+    const title = await browser.getTitle();
     console.log(`Loaded: ${title}`);
-    await this.browser.pause(3000);
+    await browser.pause(3000);
 
-    const form = new CampsiteSearchForm(this.browser);
+    const form = new CampsiteSearchForm(browser);
 
-    const campsites = await form.getCampsites()
-    console.log(campsites);
+    await browser.pause(3000);
 
-    await this.browser.pause(3000);
+    await form.selectCampsite(campsite);
 
-    await form.selectCampsite(campsites[10]);
+    await form.setArrivalDate('5/31/2021');
 
-    await form.setArrivalDate('5/15/2021');
-
-    await this.browser.pause(1000);
+    await browser.pause(10000);
 
     form.submit();
 
-    await this.browser.pause(3000);
+    await browser.pause(3000);
 
-    
-  
-    await this.browser.deleteSession();
+    await browser.deleteSession();
   }
 
 }

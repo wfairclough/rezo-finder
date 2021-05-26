@@ -1,3 +1,4 @@
+import { EngineBrowser } from '@rezo-finder/engine/common';
 import { Browser, Element } from 'webdriverio';
 
 export class CampsiteSearchForm {
@@ -30,13 +31,20 @@ export class CampsiteSearchForm {
   }
 
   constructor(
-    private readonly browser: Browser<'async'>,
+    private readonly browser: EngineBrowser,
   ) {}
 
   async getCampsites() {
-    await (await this.selectPark).click();
+    const selectParkEl = await this.selectPark
+    await selectParkEl.waitForClickable();
+    await selectParkEl.click();
     const options = await this.browser.$$('mat-option .mat-option-text');
-    const campsites = await Promise.all(options.map(opt => opt.getText()));
+    const campsites = [];
+    for (const option of options) {
+      await option.scrollIntoView();
+      const text = await option.getText();
+      campsites.push(text);
+    }
     await this.browser.keys('Escape');
     return campsites;
   }

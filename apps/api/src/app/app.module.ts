@@ -8,7 +8,7 @@ import { AppService } from './app.service';
 @Module({
   imports: [
     EngineModule,
-    OntarioParksModule
+    OntarioParksModule,
   ],
   controllers: [AppController],
   providers: [AppService],
